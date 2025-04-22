@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manipulasi HTML + CSS dengan JavaScript</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #dff9fb, #f6e58d);
+      padding: 40px;
+      color: #2d3436;
+    }
+
+    h1 {
+      text-align: center;
+      color: #0984e3;
+      margin-bottom: 30px;
+    }
+
+    .button-group {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: #6c5ce7;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      margin: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    button:hover {
+      background-color: #a29bfe;
+      transform: scale(1.05);
+    }
+
+    #dynamicContent {
+      padding: 20px;
+      border-radius: 10px;
+      background-color: #ffffff;
+      margin: 0 auto 20px auto;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 80%;
+      max-width: 600px;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .highlight {
+      background: linear-gradient(to right, #0984e3, #6c5ce7);
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+      transform: scale(1.03);
+    }
+
+    .hidden {
+      opacity: 0;
+      transform: scale(0.95);
+      pointer-events: none;
+      height: 0;
+      overflow: hidden;
+      padding: 0;
+      margin: 0 auto;
+    }
+
+    .bounce {
+      animation: bounce 0.6s ease;
+    }
+
+    @keyframes bounce {
+      0%   { transform: translateY(0); }
+      30%  { transform: translateY(-15px); }
+      60%  { transform: translateY(10px); }
+      100% { transform: translateY(0); }
+    }
+
+    form {
+      margin-top: 40px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 100%;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      border: 1px solid #b2bec3;
+      font-size: 16px;
+    }
+
+    button[type="submit"] {
+      background-color: #00b894;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #55efc4;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Manipulasi Dinamis dengan JavaScript</h1>
+
+  <div class="button-group">
+    <button onclick="changeContent()">✨ Ubah Konten</button>
+    <button onclick="toggleVisibility()">👁️ Tampilkan/Sembunyikan</button>
+    <button onclick="addAnimation()">🎯 Efek Animasi</button>
+  </div>
+
+  <div id="dynamicContent">
+    <h2>Selamat Datang!</h2>
+    <p>Ini adalah konten dinamis yang bisa kamu ubah dengan JavaScript.</p>
+  </div>
+
+  <form onsubmit="validateForm(event)">
+    <label for="name">Nama Anda:</label>
+    <input type="text" id="name" name="name" placeholder="Masukkan nama..." required />
+    <button type="submit">🚀 Kirim</button>
+  </form>
+
+  <script>
+    // Array isi konten
+    const contents = [
+      { title: "🎉 Konten Baru", message: "Ini adalah pesan pertama yang keren ✨" },
+      { title: "🔥 Konten Hebat", message: "Sekarang kontennya berubah lagi! 🚀" },
+      { title: "💡 Konten Inspiratif", message: "Setiap klik memberi kejutan baru! 🌟" },
+      { title: "📢 Konten Terakhir", message: "Terima kasih sudah klik berkali-kali 😄" }
+    ];
+
+    let contentIndex = 0;
+
+    function changeContent() {
+      const content = document.getElementById('dynamicContent');
+      const current = contents[contentIndex];
+
+      content.innerHTML = `<h2>${current.title}</h2><p>${current.message}</p>`;
+      content.classList.add('highlight', 'bounce');
+      setTimeout(() => content.classList.remove('bounce'), 600);
+
+      // Loop ke konten selanjutnya
+      contentIndex = (contentIndex + 1) % contents.length;
+    }
+
+    function toggleVisibility() {
+      const content = document.getElementById('dynamicContent');
+      content.classList.toggle('hidden');
+    }
+
+    function addAnimation() {
+      const content = document.getElementById('dynamicContent');
+      content.classList.add('bounce');
+      setTimeout(() => content.classList.remove('bounce'), 600);
+    }
+
+    function validateForm(event) {
+      event.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      if (name === '') {
+        alert('Nama tidak boleh kosong!');
+      } else {
+        alert(`Halo, ${name}! Formulir berhasil dikirim 🚀`);
+      }
+    }
+  </script>
+
+</body>
+</html>
