@@ -167,7 +167,7 @@
       data.forEach(todo => {
         const li = document.createElement("li");
         const span = document.createElement("span");
-        span.textContent = `${todo.title} ${todo.is_complete ? "✅" : ""}`;
+        span.textContent = `${todo.title} ${todo.is_complete ? "✅" : "❌"}`;
         const actions = document.createElement("div");
         actions.className = "actions";
 
