@@ -1,1 +1,280 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Todo & Keranjang App</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
+    h1, h2 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 600px;
+      margin-bottom: 30px;
+    }
+
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #4f46e5;
+      color: white;
+      border: none;
+      margin-left: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #4338ca;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      background: #f9fafb;
+      margin: 8px 0;
+      padding: 10px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .actions button {
+      margin-left: 6px;
+      padding: 6px 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .done-btn {
+      background-color: #10b981;
+      color: white;
+    }
+
+    .delete-btn {
+      background-color: #ef4444;
+      color: white;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+
+    #total-harga {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1 id="greeting">👋</h1>
+
+  <div class="container">
+    <h2>📝 Todo List</h2>
+    <input type="text" id="todo-input" placeholder="Tulis todo baru...">
+    <button id="add-button">Tambah</button>
+    <ul id="todo-list"></ul>
+  </div>
+
+  <div class="container">
+    <h2>🛒 Keranjang Belanja</h2>
+    <input type="text" id="nama-barang" placeholder="Nama barang">
+    <input type="number" id="jumlah-barang" placeholder="Jumlah">
+    <input type="number" id="harga-barang" placeholder="Harga">
+    <button id="tambah-keranjang">Tambah ke Keranjang</button>
+    <table>
+      <thead>
+        <tr>
+          <th>Nama Barang</th>
+          <th>Jumlah</th>
+          <th>Harga</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody id="keranjang-body"></tbody>
+    </table>
+    <div id="total-harga">Total: Rp 0</div>
+  </div>
+
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+    // GANTI DENGAN DATA PUNYAMU
+    const supabaseUrl = "https://pmgnuwototighfbmegdt.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZ251d290b3RpZ2hmYm1lZ2R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1ODkwNTQsImV4cCI6MjA2MjE2NTA1NH0.QjQiA6V8HnV5LWviQGCbPuQ_PuxNAVqcbL6U_epUOEg";
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const input = document.getElementById("todo-input");
+    const addButton = document.getElementById("add-button");
+    const list = document.getElementById("todo-list");
+
+    function tampilkanSalam() {
+      const greeting = document.getElementById("greeting");
+      const jam = new Date().getHours();
+      let salam = "Halo!";
+      if (jam >= 5 && jam < 12) salam = "Selamat Pagi ☀️";
+      else if (jam >= 12 && jam < 18) salam = "Selamat Siang 🌤️";
+      else if (jam >= 18 && jam < 21) salam = "Selamat Sore 🌇";
+      else salam = "Selamat Malam 🌙";
+      greeting.textContent = salam;
+    }
+
+    async function loadTodos() {
+      const { data, error } = await supabase.from("todos").select("*").order("id", { ascending: false });
+      if (error) {
+        alert("Gagal memuat todo: " + error.message);
+        return;
+      }
+
+      list.innerHTML = "";
+      data.forEach(todo => {
+        const li = document.createElement("li");
+        const span = document.createElement("span");
+        span.textContent = `${todo.title} ${todo.is_complete ? "✅" : ""}`;
+        const actions = document.createElement("div");
+        actions.className = "actions";
+
+        const doneBtn = document.createElement("button");
+        doneBtn.className = "done-btn";
+        doneBtn.textContent = todo.is_complete ? "Batal" : "Selesai";
+        doneBtn.onclick = async () => {
+          await supabase.from("todos").update({ is_complete: !todo.is_complete }).eq("id", todo.id);
+          loadTodos();
+        };
+
+        const delBtn = document.createElement("button");
+        delBtn.className = "delete-btn";
+        delBtn.textContent = "Hapus";
+        delBtn.onclick = async () => {
+          await supabase.from("todos").delete().eq("id", todo.id);
+          loadTodos();
+        };
+
+        actions.appendChild(doneBtn);
+        actions.appendChild(delBtn);
+        li.appendChild(span);
+        li.appendChild(actions);
+        list.appendChild(li);
+      });
+    }
+
+    async function addTodo() {
+      const title = input.value.trim();
+      if (!title) {
+        alert("Todo tidak boleh kosong!");
+        return;
+      }
+
+      const { error } = await supabase.from("todos").insert([{ title }]);
+      if (error) {
+        alert("Gagal menambahkan todo: " + error.message);
+        return;
+      }
+
+      input.value = "";
+      loadTodos();
+    }
+
+    async function tampilkanKeranjang() {
+      const body = document.getElementById("keranjang-body");
+      const totalDiv = document.getElementById("total-harga");
+      body.innerHTML = "";
+      let total = 0;
+
+      const { data, error } = await supabase.from("keranjang").select("*").order("id", { ascending: false });
+
+      if (error) {
+        alert("Gagal memuat keranjang: " + error.message);
+        return;
+      }
+    
+      data.forEach(item => {
+        const subtotal = item.jumlah * item.harga;
+        total += subtotal;
+      
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${item.nama}</td>
+          <td>${item.jumlah}</td>
+          <td>Rp ${item.harga}</td>
+          <td>Rp ${subtotal}</td>
+        `;
+        body.appendChild(row);
+      });
+    
+      totalDiv.textContent = `Total: Rp ${total}`;
+    }
+
+    tampilkanSalam();
+    loadTodos();
+    tampilkanKeranjang();
+    addButton.addEventListener("click", addTodo);
+
+    const namaInput = document.getElementById("nama-barang");
+    const jumlahInput = document.getElementById("jumlah-barang");
+    const hargaInput = document.getElementById("harga-barang");
+    const tambahBtn = document.getElementById("tambah-keranjang");
+      
+    async function tambahKeKeranjang() {
+      const nama = namaInput.value.trim();
+      const jumlah = parseInt(jumlahInput.value);
+      const harga = parseInt(hargaInput.value);
+    
+      if (!nama || isNaN(jumlah) || isNaN(harga)) {
+        alert("Isi semua field dengan benar!");
+        return;
+      }
+    
+      const { error } = await supabase.from("keranjang").insert([{ nama, jumlah, harga }]);
+      if (error) {
+        alert("Gagal menambahkan ke keranjang: " + error.message);
+        return;
+      }
+    
+      namaInput.value = "";
+      jumlahInput.value = "";
+      hargaInput.value = "";
+      tampilkanKeranjang();
+    }
+    
+    tambahBtn.addEventListener("click", tambahKeKeranjang);
+  </script>
+</body>
+</html>
