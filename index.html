@@ -3,24 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Junaidi - Supa</title>
+  <title>Junaidi</title>
   <style>
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-family: "Segoe UI", sans-serif;
       font-size: 16px;
-      background-color: #f3f2ef;
+      background-color: #121212;
       margin: 0;
       padding: 0;
-      color: #1c1c1c;
+      color: #f0f0f0;
     }
+
+    a { color: #90caf9; }
 
     .profile-container {
       max-width: 800px;
       margin: 40px auto;
-      background: white;
+      background: #1f1f1f;
       border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
     }
 
     .header {
@@ -42,12 +44,12 @@
     .profile-info h1 {
       margin: 0;
       font-size: 24px;
-      color: #fff;
+      color: #ffffff;
     }
 
     .profile-info p, .profile-info a {
       margin: 4px 0;
-      color: #e0e0e0;
+      color: #d0d0d0;
     }
 
     .action-buttons, .login-form {
@@ -65,11 +67,17 @@
       transition: background 0.3s ease;
     }
 
+    .action-buttons button:hover, .login-form button:hover {
+      background-color: #004182;
+    }
+
     .login-form input {
       padding: 10px;
       margin-bottom: 10px;
       width: 100%;
-      border: 1px solid #ccc;
+      background-color: #2b2b2b;
+      color: #fff;
+      border: 1px solid #444;
       border-radius: 5px;
       display: block;
     }
@@ -77,13 +85,14 @@
     .content-card {
       margin: 20px 30px;
       padding: 20px;
-      background: #f9f9f9;
+      background: #2a2a2a;
       border-radius: 10px;
       border-left: 4px solid #0a66c2;
     }
 
     .content-card h2, .content-card h3 {
       margin-top: 0;
+      color: #fff;
     }
 
     #content p {
@@ -96,7 +105,7 @@
   </style>
 </head>
 <body>
-  <!-- Container utama tampil setelah login -->
+  <!-- Main Container -->
   <div class="profile-container" id="mainContainer" style="display: none;">
     <div class="header">
       <img src="https://i.pinimg.com/736x/81/09/04/810904fd5e3a921ac6ea621b64ed827d.jpg" alt="Profile" class="avatar" />
@@ -125,7 +134,7 @@
     </div>
   </div>
 
-  <!-- Form login -->
+  <!-- Login Form -->
   <div class="login-form" id="loginForm">
     <h2>Login untuk akses data</h2>
     <input type="email" id="email" placeholder="Email" required />
@@ -133,12 +142,12 @@
     <button id="loginBtn">Login</button>
   </div>
 
-  <!-- Script -->
+  <!-- Supabase JS -->
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
     const SUPABASE_URL = 'https://pmgnuwototighfbmegdt.supabase.co'
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZ251d290b3RpZ2hmYm1lZ2R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1ODkwNTQsImV4cCI6MjA2MjE2NTA1NH0.QjQiA6V8HnV5LWviQGCbPuQ_PuxNAVqcbL6U_epUOEg'
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
@@ -148,7 +157,6 @@
     const userName = document.getElementById('userName')
     const logoutBtn = document.getElementById('logoutBtn')
 
-    // Login Button
     document.getElementById('loginBtn').addEventListener('click', async () => {
       const email = document.getElementById('email').value.trim()
       const password = document.getElementById('password').value.trim()
@@ -166,7 +174,6 @@
       loadData()
     })
 
-    // Logout Button
     logoutBtn.addEventListener('click', async () => {
       await supabase.auth.signOut()
       content.innerHTML = '<p>Silakan login untuk melihat data.</p>'
@@ -175,7 +182,6 @@
       logoutBtn.style.display = 'none'
     })
 
-    // Load Data
     async function loadData() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
@@ -200,7 +206,6 @@
       content.innerHTML = out
     }
 
-    // Auto-load if user already logged in
     window.addEventListener('DOMContentLoaded', async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
