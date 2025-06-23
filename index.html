@@ -105,7 +105,7 @@
   </style>
 </head>
 <body>
-  <!-- Main Container -->
+  <!-- Main Profile -->
   <div class="profile-container" id="mainContainer" style="display: none;">
     <div class="header">
       <img src="https://i.pinimg.com/736x/81/09/04/810904fd5e3a921ac6ea621b64ed827d.jpg" alt="Profile" class="avatar" />
@@ -142,12 +142,12 @@
     <button id="loginBtn">Login</button>
   </div>
 
-  <!-- Supabase JS -->
+  <!-- Script: Supabase -->
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
     const SUPABASE_URL = 'https://pmgnuwototighfbmegdt.supabase.co'
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZ251d290b3RpZ2hmYm1lZ2R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1ODkwNTQsImV4cCI6MjA2MjE2NTA1NH0.QjQiA6V8HnV5LWviQGCbPuQ_PuxNAVqcbL6U_epUOEg'
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
@@ -157,6 +157,7 @@
     const userName = document.getElementById('userName')
     const logoutBtn = document.getElementById('logoutBtn')
 
+    // Login button click
     document.getElementById('loginBtn').addEventListener('click', async () => {
       const email = document.getElementById('email').value.trim()
       const password = document.getElementById('password').value.trim()
@@ -174,6 +175,7 @@
       loadData()
     })
 
+    // Logout
     logoutBtn.addEventListener('click', async () => {
       await supabase.auth.signOut()
       content.innerHTML = '<p>Silakan login untuk melihat data.</p>'
@@ -182,6 +184,7 @@
       logoutBtn.style.display = 'none'
     })
 
+    // Load data after login
     async function loadData() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
@@ -206,6 +209,7 @@
       content.innerHTML = out
     }
 
+    // Auto login if session active
     window.addEventListener('DOMContentLoaded', async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
